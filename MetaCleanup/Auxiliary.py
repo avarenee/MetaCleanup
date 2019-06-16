@@ -2,6 +2,8 @@
 Contains basic functions necessary for cleanup, such as the edit distance 
 function and formatting functions.
 """
+AUDIO_EXT = ['.mp3', '.flac']
+IMG_EXT = ['.jpg', '.png', '.gif']
 
 # edit_distance is a standard low-cost edit-distance function
 
@@ -57,18 +59,31 @@ def edit_err(s):
 	else:
 		return round(len(s)/5)
 
-# filter_by_extension filters the list of objects in the directory to compatible file types
+# edit_comp returns True if its two input strings are within an acceptable edit distance from each
+# other, False otherwise
 
-def filter_by_extension(dirlist, type):
-	if type == "audio":
-		return list(filter(lambda x : x.endswith('.mp3') or x.endswith('.flac'), dirlist))
-	if type == "image":
-		dirlist = list(filter(lambda x : x.endswith('.jpg') or x.endswith('.png') or x.endswith('.gif'), dirlist))
+def edit_comp(s, t):
+	return edit_distance(s.lower(), t.lower()) <= edit_err(s)
 
-# format_search formats a search query to be a valid url
+# list_tracks lists files in directory with audio file extensions
 
-def format_search(query):
-	return query.replace(' ', '+')
+def list_tracks(dirlist):
+	return [x for x in dirlist for ext in AUDIO_EXT if x.endswith(ext)]
+
+# list_tracks lists files in directory with image file extensions
+
+def list_images(dirlist):
+	return [x for x in dirlist for ext in IMG_EXT if x.endswith(ext)]
+
+# list_ext creates an ordered list that matches 1 to 1 the extension of each track
+
+def list_ext(dirlist):
+	exts = []
+	for x in dirlist:
+		for ext in AUDIO_EXT:
+			if x.endswith(ext):
+				exts.append(ext)
+	return exts
 
 # format_path_name eliminates characters from album and track names that are invalid for file and 
 # directory names
@@ -81,20 +96,6 @@ def format_path_name(path_name):
 		if char in invalid:
 			path_name = path_name.replace(char, '')
 	return path_name
-
-# album_to_dict uses data to create a dictionary representation of an album
-
-def album_to_dict(artist, album, tracks, year, genre, cover):
-	album_dict = {"Artist" : artist, "Title" : album, "Tracks" : tracks, "Year" : year, "Genre" : genre, "Cover" : cover}
-	return album_dict 
-
-# add_all adds all items in a list to another
-
-def add_all(items, item_list):
-	for item in items:
-		if item not in item_list:
-			item_list += [item]
-	return item_list
 
 # format_track_number adds a '0' in front of single digit track numbers, for file-naming purposes
 
