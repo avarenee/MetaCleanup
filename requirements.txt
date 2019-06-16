@@ -1,0 +1,5 @@
+discogs-client==2.2.2
+mutagen==1.42.0
+requests==2.22.0
+requests-html==0.10.0
+requests-unixsocket==0.1.5
