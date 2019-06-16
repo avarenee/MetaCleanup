@@ -14,14 +14,13 @@ consistently formatting metadata for .mp3 and .flac files.
 
 How it works: MetaCleanup parses audio file metadata with Mutagen and 
 cross-references the information with the database Discogs, ensuring the file 
-is consistently and accurately tagged. HTML parsing is done with the 
-requests_html module.
+is consistently and accurately tagged.
 
 Update for v1.05:
 
 How to use: Let <dir> be a folder containing only album folders (folders with 
-audio files all from the same album), and <key> be your API key. Then, if you 
-run: 
+audio files all from the same album), and <key> be your Discogs API key. Then, 
+if you run: 
 
 $ python3 MetaCleanup.py <dir> <key>
 
