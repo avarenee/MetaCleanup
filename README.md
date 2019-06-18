@@ -11,17 +11,17 @@ albums every day. And when you download music from *cough cough* questionable
 sources, your files are most likely going to have messy and inconsistent tags.
 With such a huge music library, the thought of going in and manually fixing the
 tags is a pain. Thus, my attempt at coding an autotagger. Currently, the only 
-feature is running the python file in the command line with <dir> as the only 
-argument, <dir> being the folder where you keep your album folders. So, you 
+feature is running the python file in the command line with *<dir>* as the only 
+argument, *<dir>* being the folder where you keep your album folders. So, you 
 would enter the directory you save MetaCleanup to in bash, then enter:
   
 $ pip install -r requirements
 
 $ cd MetaCleanup
 
-$ python3 MetaCleanup.py <dir> <key>
+$ python3 MetaCleanup.py *<dir>* *<key>*
   
-Where <key> is your Discogs API key
+Where *<key>* is your Discogs API key
 
 And for each album, the code will:
 
