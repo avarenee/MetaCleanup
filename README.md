@@ -18,7 +18,7 @@ would enter the directory you save MetaCleanup to in bash, then enter:
 ```sh
 $ pip install -r requirements
 $ cd MetaCleanup
-$ python3 MetaCleanup.py \<dir\> \<key\>
+$ python3 MetaCleanup.py <dir> <key>
 ```
   
 Where \<key\> is your Discogs API key
