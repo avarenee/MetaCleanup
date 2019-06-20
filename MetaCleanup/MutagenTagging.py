@@ -1,7 +1,6 @@
 """
 Contains functions used with the mutagen package
 """
-
 import os
 import mutagen
 

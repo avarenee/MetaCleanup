@@ -32,6 +32,7 @@ a rework of the program's structure
 
 import os
 import sys
+import time
 import requests
 import mutagen.mp3
 import mutagen.flac
@@ -60,13 +61,14 @@ class Album(object):
 		self.images = aux.list_images(os.listdir(self.path))
 		self.ext = aux.list_ext(self.tracks)
 		self.imposed_track_order = []
+		self.encoded = tag.parse_tag("encodedby", self.loaded_tracks) == 'MetaCleanup'
 		self.counts = Counts()
 
 class Clean:
 
-	def __init__(self, music_folder, user_id):
+	def __init__(self, music_folder, discogs_object):
 		self.music_folder = music_folder
-		self.discogs_object = discogs_client.Client('ExampleApplication/0.1', user_token=user_id)
+		self.discogs_object = discogs_object
 		self.albums = os.listdir(self.music_folder)
 		self.counts = Counts()
 		self.run()
@@ -76,17 +78,10 @@ class Clean:
 	# associated Discogs release 
 
 	def dir_replace(self, album, release_name):
-		if album.path.lower() != release_name.lower():
-			os.rename(os.path.join(self.music_folder, album.path), os.path.join(self.music_folder, release_name))
-			album.path = os.path.join(self.music_folder, release_name)
-			album.counts.directory_count += 1
-		elif album.path != album.path.lower():
-			os.rename(os.path.join(self.music_folder, album.path), os.path.join(self.music_folder, album.path + 'temp'))
-			os.rename(os.path.join(self.music_folder, album.path + 'temp'), os.path.join(self.music_folder, release_name))
-			album.path = os.path.join(self.music_folder, release_name)
-			album.counts.directory_count += 1
-		else:
-			pass
+		os.rename(os.path.join(self.music_folder, album.path), os.path.join(self.music_folder, album.path + 'temp'))
+		os.rename(os.path.join(self.music_folder, album.path + 'temp'), os.path.join(self.music_folder, release_name))
+		album.path = os.path.join(self.music_folder, release_name)
+		album.counts.directory_count += 1
 		return
 
 	# file_replace replaces the filename for the track with "Track Number - Track Title" from the
@@ -121,42 +116,60 @@ class Clean:
 	def run(self):
 		for album_dir in self.albums: 
 			album = Album(os.path.join(self.music_folder, album_dir))
+			if album.encoded:
+				continue
 			discogs_utils = dis.DiscogsUtils(self.discogs_object)
-			print('Searching Discogs for ' + album_dir)
+			print('Searching Discogs for {0}'.format(album_dir))
 			release_no = discogs_utils.get(album)
 			if not release_no:
-				print('Could not find ' + album_dir + ' on Discogs.')
+				print('Could not find {0} on Discogs.'.format(album_dir))
 				continue
 			release = discogs_utils.d.release(release_no)
 			release_name = ', '.join([artist.name for artist in release.artists]) + ' - ' + release.title
 			release_name = aux.format_path_name(release_name)
 			self.dir_replace(album, release_name)
-			print('Re-tagging ' + release_name)
+			print('Re-tagging {0}'.format(release_name))
+			tag_dict = discogs_utils.TAG_DICT_STATIC(release_no)
 			for i in range(len(album.tracks)):
-				tag_dict = discogs_utils.TAG_DICT(release_no, album.imposed_track_order[i])
-				track_name = tag_dict["tracknumber"][0] + ' - ' + tag_dict["title"][0] + album.ext[i]
+				dynamic = discogs_utils.TAG_DICT_DYNAMIC(release_no, album.imposed_track_order[i])
+				tag_dict.update(dynamic)
+				track_name = tag_dict["tracknumber"] + ' - ' + tag_dict["title"] + album.ext[i]
 				track_name = aux.format_path_name(track_name)
 				for tag in tag_dict:
 					album.loaded_tracks[i][tag] = tag_dict[tag]
 				self.file_replace(album, track_name, i)
 				album.loaded_tracks[i].save(os.path.join(album.path, track_name))
 				album.counts.track_count += 1
+				print('Tagging of track {0} successful!'.format(str(i + 1)))
+				time.sleep(2.0)
 			album.counts.album_count += 1
+			print('Adding art\n')
 			self.add_art(album, release)
 			self.update_counts(self.counts, album.counts)
+			time.sleep(5.0)
 
-		print('Cleanup of your ' + os.path.basename(self.music_folder) + ' folder complete!\n')
-		print('Tagging fixed for ' + str(self.counts.track_count) + ' track(s) and ' + str(self.counts.album_count) + ' album(s).')
-		print('Directory names for ' + str(self.counts.directory_count) + ' album(s) changed.')
-		print('Cover art added to ' + str(self.counts.art_count) + ' album(s).')
+		print('Cleanup of your {0} folder complete!\n'.format(os.path.basename(self.music_folder)))
+		print('Tagging fixed for {0} track(s) and {1} album(s).'.format(str(self.counts.track_count), str(self.counts.album_count)))
+		print('Directory names for {0} album(s) changed.'.format(str(self.counts.directory_count)))
+		print('Cover art added to {0} album(s).'.format(str(self.counts.art_count)))
 
 		return
 
 def main():
 	music_folder = sys.argv[1]
-	user_id = sys.argv[2]
 
-	clean = Clean(music_folder, user_id)
+	d = discogs_client.Client('MetaCleanup')
+	d.set_consumer_key('ekYnBgTuKKglYnzQqCkr', 'PUWUCDgGtNtwAyRVInsPniFgqdIOQEWm')
+
+	print('You must authorize this application in order to use it.')
+	print('Please visit the following url: \n {0}'.format(d.get_authorize_url()[2]))
+	print('After authorizing the application, you should receive a token.')
+	token = input('Enter the token in the command line: ')
+	d.get_access_token(token)
+
+	print('\nStarting MetaCleanup\n')
+
+	clean = Clean(music_folder, d)
 
 if __name__ == '__main__':
 	main()
