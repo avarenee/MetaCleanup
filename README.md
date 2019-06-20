@@ -14,12 +14,12 @@ tags is a pain. Thus, my attempt at coding an autotagger. Currently, the only
 feature is running the python file in the command line with \<dir\> as the only 
 argument, \<dir\> being the folder where you keep your album folders. So, you 
 would enter the directory you save MetaCleanup to in bash, then enter:
-  
+
+```sh
 $ pip install -r requirements
-
 $ cd MetaCleanup
-
-$ python3 MetaCleanup.py \<dir\> \<key\>
+$ python3 MetaCleanup.py <dir> <key>
+```
   
 Where \<key\> is your Discogs API key
 
