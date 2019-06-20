@@ -18,11 +18,9 @@ would enter the directory you save MetaCleanup to in bash, then enter:
 ```sh
 $ pip install -r requirements
 $ cd MetaCleanup
-$ python3 MetaCleanup.py <dir> <key>
+$ python3 MetaCleanup.py <dir>
 ```
   
-Where \<key\> is your Discogs API key
-
 And for each album, the code will:
 
   1. Search Discogs using tagging data to find the album's page
