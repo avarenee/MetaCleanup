@@ -19,15 +19,11 @@ is consistently and accurately tagged.
 Update for v1.05:
 
 How to use: Let <dir> be a folder containing only album folders (folders with 
-audio files all from the same album), and <key> be your Discogs API key. Then, 
-if you run: 
+audio files all from the same album). Then, if you run: 
 
-$ python3 MetaCleanup.py <dir> <key>
+$ python3 MetaCleanup.py <dir>
 
-This should clean up the metadata of all albums in <dir>. However, Discogs 
-cannot process the amounts of requests in time. Currently this is more of
-a rework of the program's structure
-
+This should clean up the metadata of all albums in <dir>.
 """
 
 import os
