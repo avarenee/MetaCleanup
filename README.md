@@ -7,8 +7,8 @@ by avarenee
 
 This is my first little command-line app. I remember when first getting into
 music, I got, like, REALLY into music, and I was downloading up to ten new 
-albums every day. And when you download music from *cough cough* questionable 
-sources, your files are most likely going to have messy and inconsistent tags.
+albums every day. And when you download music online, your files are most likely 
+going to have messy and inconsistent tags.
 With such a huge music library, the thought of going in and manually fixing the
 tags is a pain. Thus, my attempt at coding an autotagger. Currently, the only 
 feature is running the python file in the command line with \<dir\> as the only 
